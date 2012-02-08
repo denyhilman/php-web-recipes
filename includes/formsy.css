@@ -1,0 +1,5 @@
+label.error { float: none; color: red }
+label.error.padLeft { padding-left: 10px }
+textarea { width: 600px }
+
+.ui-autocomplete { max-height: 250px; overflow-y: auto; overflow-x: hidden }
