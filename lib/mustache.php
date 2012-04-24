@@ -1,6 +1,6 @@
-<?php // 0.0.5
+<?php // 0.0.6
 
-require_once('mustache.php-0.8.1/Mustache.php');
+require_once('mustache.php-1.1.0/Mustache.php');
 
 function mustache_renderString($template, $array = array()) {
 	$m = new Mustache;

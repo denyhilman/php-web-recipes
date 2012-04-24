@@ -14,7 +14,7 @@
  */
 class Mustache {
 
-	const VERSION      = '0.8.1';
+	const VERSION      = '1.1.0';
 	const SPEC_VERSION = '1.1.2';
 
 	/**
@@ -29,6 +29,9 @@ class Mustache {
 		MustacheException::UNKNOWN_PARTIAL          => false,
 		MustacheException::UNKNOWN_PRAGMA           => true,
 	);
+
+	// Override the escaper function. Defaults to `htmlspecialchars`.
+	protected $_escape;
 
 	// Override charset passed to htmlentities() and htmlspecialchars(). Defaults to UTF-8.
 	protected $_charset = 'UTF-8';
@@ -84,6 +87,11 @@ class Mustache {
 	 * Passing an $options array allows overriding certain Mustache options during instantiation:
 	 *
 	 *     $options = array(
+	 *         // `escape` -- custom escaper callback; must be callable.
+	 *         'escape' => function($text) {
+	 *             return htmlspecialchars($text, ENT_COMPAT, 'UTF-8');
+	 *         },
+	 *
 	 *         // `charset` -- must be supported by `htmlspecialentities()`. defaults to 'UTF-8'
 	 *         'charset' => 'ISO-8859-1',
 	 *
@@ -93,6 +101,15 @@ class Mustache {
 	 *         // an array of pragmas to enable/disable
 	 *         'pragmas' => array(
 	 *             Mustache::PRAGMA_UNESCAPED => true
+	 *         ),
+	 *
+	 *         // an array of thrown exceptions to enable/disable
+	 *         'throws_exceptions' => array(
+	 *             MustacheException::UNKNOWN_VARIABLE         => false,
+	 *             MustacheException::UNCLOSED_SECTION         => true,
+	 *             MustacheException::UNEXPECTED_CLOSE_SECTION => true,
+	 *             MustacheException::UNKNOWN_PARTIAL          => false,
+	 *             MustacheException::UNKNOWN_PRAGMA           => true,
 	 *         ),
 	 *     );
 	 *
@@ -118,6 +135,13 @@ class Mustache {
 	 * @return void
 	 */
 	protected function _setOptions(array $options) {
+		if (isset($options['escape'])) {
+			if (!is_callable($options['escape'])) {
+				throw new InvalidArgumentException('Mustache constructor "escape" option must be callable');
+			}
+			$this->_escape = $options['escape'];
+		}
+
 		if (isset($options['charset'])) {
 			$this->_charset = $options['charset'];
 		}
@@ -138,6 +162,12 @@ class Mustache {
 				}
 			}
 			$this->_pragmas = $options['pragmas'];
+		}
+
+		if (isset($options['throws_exceptions'])) {
+			foreach ($options['throws_exceptions'] as $exception => $value) {
+				$this->_throwsExceptions[$exception] = $value;
+			}
 		}
 	}
 
@@ -189,7 +219,7 @@ class Mustache {
 		}
 
 		$template = $this->_renderPragmas($template);
-		$template = $this->_renderTemplate($template, $this->_context);
+		$template = $this->_renderTemplate($template);
 
 		$this->_otag = $otag_orig;
 		$this->_ctag = $ctag_orig;
@@ -403,7 +433,11 @@ class Mustache {
 		$options_string = $matches['options_string'];
 
 		if (!in_array($pragma_name, $this->_pragmasImplemented)) {
-			throw new MustacheException('Unknown pragma: ' . $pragma_name, MustacheException::UNKNOWN_PRAGMA);
+			if ($this->_throwsException(MustacheException::UNKNOWN_PRAGMA)) {
+				throw new MustacheException('Unknown pragma: ' . $pragma_name, MustacheException::UNKNOWN_PRAGMA);
+			} else {
+				return '';
+			}
 		}
 
 		$options = array();
@@ -448,7 +482,9 @@ class Mustache {
 	 */
 	protected function _getPragmaOptions($pragma_name) {
 		if (!$this->_hasPragma($pragma_name)) {
-			throw new MustacheException('Unknown pragma: ' . $pragma_name, MustacheException::UNKNOWN_PRAGMA);
+			if ($this->_throwsException(MustacheException::UNKNOWN_PRAGMA)) {
+				throw new MustacheException('Unknown pragma: ' . $pragma_name, MustacheException::UNKNOWN_PRAGMA);
+			}
 		}
 
 		return (is_array($this->_localPragmas[$pragma_name])) ? $this->_localPragmas[$pragma_name] : array();
@@ -619,7 +655,13 @@ class Mustache {
 	 * @return string
 	 */
 	protected function _renderEscaped($tag_name, $leading, $trailing) {
-		$rendered = htmlentities($this->_renderUnescaped($tag_name, '', ''), ENT_COMPAT, $this->_charset);
+		$value = $this->_renderUnescaped($tag_name, '', '');
+		if (isset($this->_escape)) {
+			$rendered = call_user_func($this->_escape, $value);
+		} else {
+			$rendered = htmlentities($value, ENT_COMPAT, $this->_charset);
+		}
+
 		return $leading . $rendered . $trailing;
 	}
 
@@ -767,7 +809,7 @@ class Mustache {
 			$first = array_shift($chunks);
 
 			$ret = $this->_findVariableInContext($first, $this->_context);
-			while ($next = array_shift($chunks)) {
+			foreach ($chunks as $next) {
 				// Slice off a chunk of context for dot notation traversal.
 				$c = array($ret);
 				$ret = $this->_findVariableInContext($next, $c);
@@ -819,7 +861,7 @@ class Mustache {
 	 * @return string
 	 */
 	protected function _getPartial($tag_name) {
-		if (is_array($this->_partials) && isset($this->_partials[$tag_name])) {
+		if ((is_array($this->_partials) || $this->_partials instanceof ArrayAccess) && isset($this->_partials[$tag_name])) {
 			return $this->_partials[$tag_name];
 		}
 
