@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/../includes/isEmail.php');
+require_once(__DIR__ . '/../lib/isEmail.php');
 
 class isEmailTestCase extends PHPUnit_Framework_TestCase {
 	public function testCorrectEmail() {

@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/../includes/bcrypt.php');
+require_once(__DIR__ . '/../lib/bcrypt.php');
 
 class BcryptTestCase extends PHPUnit_Framework_TestCase {
 	public function testBcrypt() {

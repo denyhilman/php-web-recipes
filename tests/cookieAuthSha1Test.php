@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/../includes/cookieAuthSha1.php');
+require_once(__DIR__ . '/../lib/cookieAuthSha1.php');
 
 class CookieAuthSha1TestCase extends PHPUnit_Framework_TestCase {
 	public function testCookieAuthSha1() {

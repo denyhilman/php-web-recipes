@@ -1,6 +1,6 @@
 <?php
 // Find and replace SRCFILE with your actual source file name
-require_once(__DIR__ . '/../includes/mustache.php');
+require_once(__DIR__ . '/../lib/mustache.php');
 
 class MustacheTestCase extends PHPUnit_Framework_TestCase {
 

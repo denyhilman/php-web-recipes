@@ -5,9 +5,9 @@
 3. Write tests.
 */
 
-// require_once(__DIR__ . '/../includes/SRCFILE.php');
+// require_once(__DIR__ . '/../lib/SRCFILE.php');
 
-class SRCFILETestCase extends PHPUnit_Framework_TestCase {
+class SRCFILETest extends PHPUnit_Framework_TestCase {
 	public function testName() {
 		/*
 		$result = doSomethingHere();

@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/../includes/cookieAuthBcrypt.php');
+require_once(__DIR__ . '/../lib/cookieAuthBcrypt.php');
 
 class CookieAuthBcryptTestCase extends PHPUnit_Framework_TestCase {
 	public function testCookieAuthBcrypt() {

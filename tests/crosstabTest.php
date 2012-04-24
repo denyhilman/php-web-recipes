@@ -1,6 +1,6 @@
 <?php
-require_once(__DIR__ . '/../includes/crosstab.php');
-require_once(__DIR__ . '/../includes/testException.php');
+require_once(__DIR__ . '/../lib/crosstab.php');
+require_once(__DIR__ . '/../lib/testException.php');
 
 class CrosstabTest extends PHPUnit_Framework_TestCase {
 

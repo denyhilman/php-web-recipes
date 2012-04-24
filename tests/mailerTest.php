@@ -1,10 +1,10 @@
 <?php
-require_once(__DIR__ . '/../includes/mailer.php');
+require_once(__DIR__ . '/../lib/mailer.php');
 
 define('TRAPMAIL_PATH', '/tmp/trapmail.log');
 define('SENDMAIL_PATH', 'cat /dev/stdin >> ' . TRAPMAIL_PATH);
 
-class mailerTestCase extends PHPUnit_Framework_TestCase {
+class mailerTest extends PHPUnit_Framework_TestCase {
 	private function validateSendMailPathCorrect() {
 
 		if (ini_get('sendmail_path') !== SENDMAIL_PATH) {

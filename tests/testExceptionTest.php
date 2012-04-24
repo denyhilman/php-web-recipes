@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/../includes/testException.php');
+require_once(__DIR__ . '/../lib/testException.php');
 
 class TestExceptionTestCase extends PHPUnit_Framework_TestCase {
 	public function testNonExceptionalCodeBlock() {

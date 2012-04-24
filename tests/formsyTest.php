@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/../includes/formsy.php');
+require_once(__DIR__ . '/../lib/formsy.php');
 
 // TODO: write test for formsy_renderInputFormDictionary
 // TODO: write test for wysiwyg
@@ -206,12 +206,14 @@ $(\'#favLanguage\').autocomplete({ minLength: 0, source: favLanguageAutocomplete
 	}
 
 	public function testIsSubmitted() {
+		$_POST = array();
 		$_POST['blah'] = 123;
 		$result = formsy_isSubmitted($_POST);
 		$this->assertTrue($result);
 	}
 
 	public function testIsNotSubmitted() {
+		$_POST = array();
 		$result = formsy_isSubmitted($_POST);
 		$this->assertFalse($result);
 	}

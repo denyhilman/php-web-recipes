@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/../includes/cookieAuthSingleUser.php');
+require_once(__DIR__ . '/../lib/cookieAuthSingleUser.php');
 
 class CookieAuthSingleUserTestCase extends PHPUnit_Framework_TestCase {
 	public function testIsLoggedIn() {

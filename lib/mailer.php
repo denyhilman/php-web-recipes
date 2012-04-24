@@ -65,7 +65,7 @@ function mailer_send($to, $subject, $body, $fromName, $fromAddress, $messageCont
 			$content[] = "Content-Transfer-Encoding: base64\n"; // requires newline to separate headers & content
 			$content[] = $fileContentsEncoded . "\n"; // requires newline to separate each boundary
 		}
-    	$content[] = "--{$mime_boundary}--";
+    	$content[] = "--{$mimeBoundary}--";
 	} else {
 		$content[] = chunk_split(base64_encode($body));
 	}
